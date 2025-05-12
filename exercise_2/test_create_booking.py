@@ -90,6 +90,10 @@ class TestBookings:
         update_booking = requests.put(f"{BASE_URL}/booking/{booking_id}", headers=headers, json=booking_data)
         assert update_booking.status_code == 403, "Доступ к запрошенному ресурсу разрешен"
 
+        # Проверка с пустым телом запроса
+        update_booking = auth_session.put(f"{BASE_URL}/booking/{booking_id}", json={})
+        assert update_booking.status_code == 400, "Сервер принимает пустое тело запроса"
+
         update_booking = auth_session.put(f"{BASE_URL}/booking/{booking_id}", json=booking_data)
         assert update_booking.status_code == 200
 
