@@ -1,7 +1,7 @@
 import requests
 
-from src.conftest import auth_session
-from src.constant import BASE_URL, HEADERS
+from tests.conftest import auth_session
+from src.config.constant import BASE_URL, HEADERS
 
 
 class TestBookings:

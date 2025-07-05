@@ -2,7 +2,7 @@ import pytest
 import requests
 from faker import Faker
 
-from constant import HEADERS, BASE_URL
+from src.config.constant import HEADERS, BASE_URL
 
 faker = Faker()
 
