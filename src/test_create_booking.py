@@ -1,7 +1,7 @@
 import requests
 
-from exercise_2.conftest import auth_session
-from exercise_2.constant import BASE_URL, HEADERS
+from src.conftest import auth_session
+from src.constant import BASE_URL, HEADERS
 
 
 class TestBookings:
