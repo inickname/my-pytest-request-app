@@ -1,13 +1,16 @@
 import requests
 
 from tests.conftest import auth_session
-from src.config.constant import BASE_URL, HEADERS
+from src.config.constant import Url, return_base_url, Headers, return_headers
+
+HEADERS = return_headers(Headers.HEADERS)
+BASE_URL = return_base_url(Url.BASE_URL)
 
 
 class TestBookings:
 
     def test_create_booking(self, booking_data, auth_session):
-        create_booking = auth_session.post(f"{BASE_URL}/booking", json=booking_data)
+        create_booking = auth_session.post(f"{BASE_URL}/booking", json=booking_data.model_dump())
         assert create_booking.status_code == 200
         booking_id = create_booking.json().get("bookingid")
         assert booking_id is not None, "ID букинга не найден в ответе"
@@ -16,14 +19,14 @@ class TestBookings:
         assert get_booking.status_code == 200
 
         booking_data_response = get_booking.json()
-        assert booking_data_response['firstname'] == booking_data['firstname'], "Имя не совпадает с заданным"
-        assert booking_data_response['lastname'] == booking_data['lastname'], "Фамилия не совпадает с заданной"
-        assert booking_data_response['totalprice'] == booking_data['totalprice'], "Цена не совпадает с заданной"
-        assert booking_data_response['depositpaid'] == booking_data['depositpaid'], "Статус депозита не совпадает"
-        assert booking_data_response['bookingdates']['checkin'] == booking_data['bookingdates'][
-            'checkin'], "Дата заезда не совпадает"
-        assert booking_data_response['bookingdates']['checkout'] == booking_data['bookingdates'][
-            'checkout'], "Дата выезда не совпадает"
+        assert booking_data_response['firstname'] == booking_data.firstname, "Имя не совпадает с заданным"
+        assert booking_data_response['lastname'] == booking_data.lastname, "Фамилия не совпадает с заданной"
+        assert booking_data_response['totalprice'] == booking_data.totalprice, "Цена не совпадает с заданной"
+        assert booking_data_response['depositpaid'] == booking_data.depositpaid, "Статус депозита не совпадает"
+        assert booking_data_response['bookingdates'][
+                   'checkin'] == booking_data.bookingdates.checkin, "Дата заезда не совпадает"
+        assert booking_data_response['bookingdates'][
+                   'checkout'] == booking_data.bookingdates.checkout, "Дата выезда не совпадает"
 
         delete_booking = auth_session.delete(f"{BASE_URL}/booking/{booking_id}")
         assert delete_booking.status_code == 201, f"Ошибка при удалении букинга с ID {booking_id}"
@@ -82,30 +85,32 @@ class TestBookings:
         assert booking_id is not None, "ID букинга не найден в ответе"
 
         # Проверка без токена
-        update_booking = requests.put(f"{BASE_URL}/booking/{booking_id}", headers=HEADERS, json=booking_data)
+        update_booking = requests.put(f"{BASE_URL}/booking/{booking_id}", headers=HEADERS,
+                                      json=booking_data.model_dump())
         assert update_booking.status_code == 403, "Доступ к запрошенному ресурсу разрешен"
 
         # Проверка с поддельным токеном
         headers = {"Content-Type": "application/json", "Accept": "application/json", "Cookie": f"token=faketoken555"}
-        update_booking = requests.put(f"{BASE_URL}/booking/{booking_id}", headers=headers, json=booking_data)
+        update_booking = requests.put(f"{BASE_URL}/booking/{booking_id}", headers=headers,
+                                      json=booking_data.model_dump())
         assert update_booking.status_code == 403, "Доступ к запрошенному ресурсу разрешен"
 
         # Проверка с пустым телом запроса
         update_booking = auth_session.put(f"{BASE_URL}/booking/{booking_id}", json={})
         assert update_booking.status_code == 400, "Сервер принимает пустое тело запроса"
 
-        update_booking = auth_session.put(f"{BASE_URL}/booking/{booking_id}", json=booking_data)
+        update_booking = auth_session.put(f"{BASE_URL}/booking/{booking_id}", json=booking_data.model_dump())
         assert update_booking.status_code == 200
 
         booking_data_response = update_booking.json()
-        assert booking_data_response['firstname'] == booking_data['firstname'], "Имя не совпадает с заданным"
-        assert booking_data_response['lastname'] == booking_data['lastname'], "Фамилия не совпадает с заданной"
-        assert booking_data_response['totalprice'] == booking_data['totalprice'], "Цена не совпадает с заданной"
-        assert booking_data_response['depositpaid'] == booking_data['depositpaid'], "Статус депозита не совпадает"
-        assert booking_data_response['bookingdates']['checkin'] == booking_data['bookingdates'][
-            'checkin'], "Дата заезда не совпадает"
-        assert booking_data_response['bookingdates']['checkout'] == booking_data['bookingdates'][
-            'checkout'], "Дата выезда не совпадает"
+        assert booking_data_response['firstname'] == booking_data.firstname, "Имя не совпадает с заданным"
+        assert booking_data_response['lastname'] == booking_data.lastname, "Фамилия не совпадает с заданной"
+        assert booking_data_response['totalprice'] == booking_data.totalprice, "Цена не совпадает с заданной"
+        assert booking_data_response['depositpaid'] == booking_data.depositpaid, "Статус депозита не совпадает"
+        assert booking_data_response['bookingdates'][
+                   'checkin'] == booking_data.bookingdates.checkin, "Дата заезда не совпадает"
+        assert booking_data_response['bookingdates'][
+                   'checkout'] == booking_data.bookingdates.checkout, "Дата выезда не совпадает"
 
         delete_booking = auth_session.delete(f"{BASE_URL}/booking/{booking_id}")
         assert delete_booking.status_code == 201, f"Ошибка при удалении букинга с ID {booking_id}"
@@ -116,7 +121,7 @@ class TestBookings:
             "lastname": "Lastname"
         }
 
-        create_booking = auth_session.post(f"{BASE_URL}/booking", json=booking_data)
+        create_booking = auth_session.post(f"{BASE_URL}/booking", json=booking_data.model_dump())
         assert create_booking.status_code == 200
         booking_id = create_booking.json().get("bookingid")
         assert booking_id is not None, "ID букинга не найден в ответе"

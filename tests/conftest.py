@@ -2,9 +2,13 @@ import pytest
 import requests
 from faker import Faker
 
-from src.config.constant import HEADERS, BASE_URL
+from src.config.constant import Url, return_base_url, Headers, return_headers
+from src.utils.validate_booking_request import BookingData
 
 faker = Faker()
+
+HEADERS = return_headers(Headers.HEADERS)
+BASE_URL = return_base_url(Url.BASE_URL)
 
 
 @pytest.fixture(scope="session")
@@ -13,7 +17,8 @@ def auth_session():
     session = requests.Session()
     session.headers.update(HEADERS)
 
-    auth_response = session.post(f"{BASE_URL}/auth", json={"username": "admin", "password": "password123"})
+    auth_response = session.post(f"{BASE_URL}/auth",
+                                 json={"username": "admin", "password": "password123"})
     assert auth_response.status_code == 200, "Ошибка авторизации, статус код не 200"
     token = auth_response.json().get("token")
     assert token is not None, "Токен не найден в ответе"
@@ -24,14 +29,5 @@ def auth_session():
 
 @pytest.fixture()
 def booking_data():
-    return {
-        "firstname": faker.first_name(),
-        "lastname": faker.last_name(),
-        "totalprice": faker.random_int(min=100, max=10000),
-        "depositpaid": True,
-        "bookingdates": {
-            "checkin": "2024-04-05",
-            "checkout": "2024-04-08"
-        },
-        "additionalneeds": "Breakfast"
-    }
+    booking = BookingData.create_booking_data()
+    return booking
