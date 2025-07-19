@@ -1,5 +1,9 @@
+import json
+
 import requests
 
+from src.data_models.booking_response_data_model import BookingResponseModel
+from src.utils.validate_booking_response import validate_response
 from tests.conftest import auth_session
 from src.config.constant import Url, return_base_url, Headers, return_headers
 
@@ -18,15 +22,17 @@ class TestBookings:
         get_booking = auth_session.get(f"{BASE_URL}/booking/{booking_id}")
         assert get_booking.status_code == 200
 
-        booking_data_response = get_booking.json()
-        assert booking_data_response['firstname'] == booking_data.firstname, "Имя не совпадает с заданным"
-        assert booking_data_response['lastname'] == booking_data.lastname, "Фамилия не совпадает с заданной"
-        assert booking_data_response['totalprice'] == booking_data.totalprice, "Цена не совпадает с заданной"
-        assert booking_data_response['depositpaid'] == booking_data.depositpaid, "Статус депозита не совпадает"
-        assert booking_data_response['bookingdates'][
-                   'checkin'] == booking_data.bookingdates.checkin, "Дата заезда не совпадает"
-        assert booking_data_response['bookingdates'][
-                   'checkout'] == booking_data.bookingdates.checkout, "Дата выезда не совпадает"
+        # booking_data_response = get_booking.json()
+        # booking_data_response = BookingResponseModel.model_validate_json(json.dumps(get_booking.json()))
+        booking_data_response = validate_response(get_booking, BookingResponseModel, 200, booking_data.model_dump())
+        assert booking_data_response.firstname == booking_data.firstname, "Имя не совпадает с заданным"
+        assert booking_data_response.lastname == booking_data.lastname, "Фамилия не совпадает с заданной"
+        assert booking_data_response.totalprice == booking_data.totalprice, "Цена не совпадает с заданной"
+        assert booking_data_response.depositpaid == booking_data.depositpaid, "Статус депозита не совпадает"
+        assert (booking_data_response.bookingdates.checkin ==
+                booking_data.bookingdates.checkin), "Дата заезда не совпадает"
+        assert (booking_data_response.bookingdates.checkout ==
+                booking_data.bookingdates.checkout), "Дата выезда не совпадает"
 
         delete_booking = auth_session.delete(f"{BASE_URL}/booking/{booking_id}")
         assert delete_booking.status_code == 201, f"Ошибка при удалении букинга с ID {booking_id}"
