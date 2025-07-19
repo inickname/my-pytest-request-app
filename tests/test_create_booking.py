@@ -1,5 +1,3 @@
-import json
-
 import requests
 
 from src.data_models.booking_response_data_model import BookingResponseModel
