@@ -14,7 +14,7 @@ class BookingApiClient:
             response.raise_for_status()  # Выбросит HTTPError для плохих статусов
         return response.json()
 
-    def get_bookings_ids(self, booking_id: ""):
+    def get_bookings(self, booking_id=""):
         """Отправляет запрос на получение списка bookings."""
         response = self.auth_session.get(f"{self.base_url}/booking/{booking_id}")
         if response.status_code != 200:
