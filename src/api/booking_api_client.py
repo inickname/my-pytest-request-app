@@ -12,6 +12,7 @@ class BookingApiClient:
         # Базовая проверка, что запрос успешен и мы можем парсить JSON
         if response.status_code not in (200, 201):
             response.raise_for_status()  # Выбросит HTTPError для плохих статусов
+        assert response.status_code == 200
         return response.json()
 
     def get_bookings(self, booking_id=""):
@@ -19,25 +20,30 @@ class BookingApiClient:
         response = self.auth_session.get(f"{self.base_url}/booking/{booking_id}")
         if response.status_code != 200:
             response.raise_for_status()
-        return response.json()
+        assert response.status_code == 200
+        return response
 
     def update_booking(self, booking_id, booking_data):
         """Отправляет запрос на обновление booking."""
         response = self.auth_session.put(f"{self.base_url}/booking/{booking_id}", json=booking_data.model_dump())
         if response.status_code != 200:
             response.raise_for_status()
+        assert response.status_code == 200
         return response.json()
 
     def partial_update_booking(self, booking_id, booking_data):
         response = self.auth_session.patch(f"{self.base_url}/booking/{booking_id}", json=booking_data.model_dump())
         if response.status_code != 200:
             response.raise_for_status()
+        assert response.status_code == 200
         return response.json()
 
     def delete_booking(self, booking_id):
         """Отправляет запрос на удаление booking."""
         response = self.auth_session.delete(f"{self.base_url}/booking/{booking_id}")
+        print(response.status_code)
         if response.status_code != 200:  # В REST API для DELETE часто возвращают 204 No Content или 200 OK
             response.raise_for_status()
+        assert response.status_code == 201
         # Для DELETE часто нечего возвращать из тела, либо можно вернуть статус-код или сам response
         return response  # или response.status_code

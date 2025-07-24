@@ -1,12 +1,36 @@
 import requests
 
+from src.api.booking_api_client import BookingApiClient
 from src.data_models.booking_response_data_model import BookingResponseModel
+from src.scenarios.booking_scenarios import BookingScenarios
 from src.utils.validate_booking_response import validate_response
 from tests.conftest import auth_session
 from src.config.constant import Url, return_base_url, Headers, return_headers
 
 HEADERS = return_headers(Headers.HEADERS)
 BASE_URL = return_base_url(Url.BASE_URL)
+
+
+class TestBooking:
+    def test_get_and_verify_bookings_exist(self, auth_session):
+        booking_api_client = BookingApiClient(auth_session)
+        booking_scenarios = BookingScenarios(booking_api_client)
+        booking_scenarios.get_and_verify_bookings_exist()
+
+    def test_create_booking_check_and_delete(self, auth_session, booking_data):
+        booking_api_client = BookingApiClient(auth_session)
+        booking_scenarios = BookingScenarios(booking_api_client)
+        booking_scenarios.create_booking_check_and_delete(booking_data)
+
+    def test_update_booking_and_verify_changes(self, auth_session, booking_data):
+        booking_api_client = BookingApiClient(auth_session)
+        booking_scenarios = BookingScenarios(booking_api_client)
+        booking_scenarios.update_booking_and_verify_changes(2425, booking_data)
+
+    def test_delete_existing_booking_and_verify(self, auth_session):
+        booking_api_client = BookingApiClient(auth_session)
+        booking_scenarios = BookingScenarios(booking_api_client)
+        booking_scenarios.delete_existing_booking_and_verify(2425)
 
 
 class TestBookings:
@@ -38,12 +62,12 @@ class TestBookings:
         get_deleted_booking = auth_session.get(f"{BASE_URL}/booking/{booking_id}")
         assert get_deleted_booking.status_code == 404, "Букинг не был удален"
 
-    def test_get_bookings_ids(self, auth_session):
-        get_bookings_ids = auth_session.get(f"{BASE_URL}/booking")
-        assert get_bookings_ids.status_code == 200
-
-        bookings_ids_response = get_bookings_ids.json()
-        assert len(bookings_ids_response) > 0, "Список идентификаторов бронирований пуст"
+    # def test_get_bookings_ids(self, auth_session):
+    #     get_bookings_ids = auth_session.get(f"{BASE_URL}/booking")
+    #     assert get_bookings_ids.status_code == 200
+    #
+    #     bookings_ids_response = get_bookings_ids.json()
+    #     assert len(bookings_ids_response) > 0, "Список идентификаторов бронирований пуст"
 
     def test_get_bookings_ids_filtered_by_name(self, auth_session):
         get_bookings_ids_filtered_by_name = auth_session.get(f"{BASE_URL}/booking?firstname=Sally&lastname=Brown")
