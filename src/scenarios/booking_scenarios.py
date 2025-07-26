@@ -21,8 +21,9 @@ class BookingScenarios:
         Сценарий: создать booking и сразу же его удалить.
         Возвращает ID созданного и удаленного booking.
         """
+        booking_data = booking_data()
         created_booking_data = self.api_client.create_booking(booking_data)
-        booking_id = created_booking_data.get("bookingid")
+        booking_id = created_booking_data.json().get("bookingid")
         assert booking_id is not None, f"ID не найден в ответе на создание: {created_booking_data}"
 
         get_booking = self.api_client.get_bookings(booking_id)
@@ -34,22 +35,43 @@ class BookingScenarios:
         print(f"Booking с ID {booking_id} успешно создан и удален.")
         return booking_id
 
-    def update_booking_and_verify_changes(self, booking_id, booking_data):
+    def update_booking_and_verify_changes(self, booking_data):
         """
         Сценарий: обновить booking и проверить, что данные изменились.
         """
-        updated_booking = self.api_client.update_booking(booking_id, booking_data)
+        booking_data_1 = booking_data()
+        booking_data_2 = booking_data()
+        booking_id = self.api_client.create_booking(booking_data_1).json().get("bookingid")
+        updated_booking = self.api_client.update_booking(booking_id, booking_data_2)
 
-        assert updated_booking["firstname"] == booking_data.firstname, \
-            f"Имя не обновилось. Ожидалось: {booking_data['firstname']}, получено: {updated_booking['firstname']}"
-        assert updated_booking["lastname"] == booking_data.lastname, \
-            f"Фамилия не обновилась. Ожидалось: {booking_data['lastname']}, получено: {updated_booking['lastname']}"
+        validate_response(updated_booking, BookingResponseModel, 200, booking_data_2.model_dump())
+
         print(f"Booking с ID {booking_id} успешно обновлен.")
-        return updated_booking
+        self.api_client.delete_booking(booking_id)
+        return booking_id
 
-    def delete_existing_booking_and_verify(self, booking_id):  # test_booking переименован в booking_id для ясности
+    def partial_update_booking_and_verify_changes(self, booking_data):
+        """
+        Сценарий: Частично обновить booking и проверить, что данные изменились.
+        """
+        booking_data_1 = booking_data()
+        booking_data_2 = booking_data()
+        booking_id = self.api_client.create_booking(booking_data_1).json().get("bookingid")
+        partial_update_booking = self.api_client.partial_update_booking(booking_id, booking_data_2)
+
+        validate_response(partial_update_booking, BookingResponseModel, 200, booking_data_2.model_dump())
+
+        print(f"Booking с ID {booking_id} успешно обновлен.")
+        self.api_client.delete_booking(booking_id)
+        return booking_id
+
+    def delete_existing_booking_and_verify(self, booking_data):  # test_booking переименован в booking_id для ясности
         """
         Сценарий: удалить существующий booking и убедиться, что он удален.
         """
+        booking_data = booking_data()
+        booking_id = self.api_client.create_booking(booking_data).json().get("bookingid")
+
         self.api_client.delete_booking(booking_id)
         print(f"Booking с ID {booking_id} отправлен на удаление.")
+        return booking_id

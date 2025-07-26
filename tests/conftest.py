@@ -29,5 +29,8 @@ def auth_session():
 
 @pytest.fixture()
 def booking_data():
-    booking = BookingData.create_booking_data()
-    return booking
+    def _booking_data():
+        booking = BookingData.create_booking_data()
+        return booking
+
+    yield _booking_data
