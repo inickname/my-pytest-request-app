@@ -1,10 +1,10 @@
-from src.config.constant import return_base_url, Url
+from src.enums.enums import Url
 
 
 class BookingApiClient:
     def __init__(self, auth_session):
         self.auth_session = auth_session
-        self.base_url = return_base_url(Url.BASE_URL)
+        self.base_url = Url.BASE_URL.value
 
     def create_booking(self, booking_data):
         """Отправляет запрос на создание booking."""

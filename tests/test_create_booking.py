@@ -1,10 +1,6 @@
 from src.api.booking_api_client import BookingApiClient
 from src.scenarios.booking_scenarios import BookingScenarios
 from tests.conftest import auth_session
-from src.config.constant import Url, return_base_url, Headers, return_headers
-
-HEADERS = return_headers(Headers.HEADERS)
-BASE_URL = return_base_url(Url.BASE_URL)
 
 
 class TestBookings:

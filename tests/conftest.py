@@ -1,14 +1,11 @@
 import pytest
 import requests
-from faker import Faker
 
-from src.config.constant import Url, return_base_url, Headers, return_headers
-from src.utils.validate_booking_request import BookingData
+from src.enums.enums import Headers, Url
+from src.data_models.booking_request_data_model import BookingDataModel
 
-faker = Faker()
-
-HEADERS = return_headers(Headers.HEADERS)
-BASE_URL = return_base_url(Url.BASE_URL)
+HEADERS = Headers.HEADERS.value
+BASE_URL = Url.BASE_URL.value
 
 
 @pytest.fixture(scope="session")
@@ -30,7 +27,7 @@ def auth_session():
 @pytest.fixture()
 def booking_data():
     def _booking_data():
-        booking = BookingData.create_booking_data()
+        booking = BookingDataModel.create_booking_data()
         return booking
 
     yield _booking_data
