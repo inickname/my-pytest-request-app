@@ -1,3 +1,4 @@
+import allure
 import pytest
 import requests
 
@@ -9,6 +10,7 @@ BASE_URL = Url.BASE_URL.value
 
 
 @pytest.fixture(scope="session")
+@allure.title("Создание сессии с авторизацией")
 def auth_session():
     """Создаёт сессию с авторизацией и возвращает объект сессии."""
     session = requests.Session()
@@ -25,6 +27,7 @@ def auth_session():
 
 
 @pytest.fixture()
+@allure.title("Генерация данных для элемента")
 def booking_data():
     def _booking_data():
         booking = BookingDataModel.create_booking_data()
