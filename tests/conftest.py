@@ -2,11 +2,12 @@ import allure
 import pytest
 import requests
 
-from src.enums.enums import Headers, Url
+from src.enums.enums import Headers, Url, AuthData
 from src.data_models.booking_request_data_model import BookingDataModel
 
 HEADERS = Headers.HEADERS.value
 BASE_URL = Url.BASE_URL.value
+AUTH_DATA = AuthData.AUTH_DATA.value
 
 
 @pytest.fixture(scope="session")
@@ -16,8 +17,7 @@ def auth_session():
     session = requests.Session()
     session.headers.update(HEADERS)
 
-    auth_response = session.post(f"{BASE_URL}/auth",
-                                 json={"username": "admin", "password": "password123"})
+    auth_response = session.post(f"{BASE_URL}/auth", json=AUTH_DATA)
     assert auth_response.status_code == 200, "Ошибка авторизации, статус код не 200"
     token = auth_response.json().get("token")
     assert token is not None, "Токен не найден в ответе"

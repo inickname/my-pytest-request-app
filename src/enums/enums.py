@@ -7,3 +7,10 @@ class Url(Enum):
 
 class Headers(Enum):
     HEADERS = {"Content-Type": "application/json", "Accept": "application/json"}
+
+
+class AuthData(Enum):
+    AUTH_DATA = {
+        "username": "admin",
+        "password": "password123"
+    }
