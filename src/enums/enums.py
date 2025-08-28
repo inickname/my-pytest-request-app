@@ -1,4 +1,8 @@
 from enum import Enum
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class Url(Enum):
@@ -11,6 +15,6 @@ class Headers(Enum):
 
 class AuthData(Enum):
     AUTH_DATA = {
-        "username": "admin",
-        "password": "password123"
+        "username": os.getenv("USERNAME"),
+        "password": os.getenv("PASSWORD")
     }

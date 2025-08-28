@@ -2,3 +2,4 @@
 __pycache__
 test_create_booking_for_me.py
 allure-results
+.env
