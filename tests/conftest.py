@@ -2,7 +2,9 @@ import allure
 import pytest
 import requests
 
-from src.enums.enums import Headers, Url, AuthData
+from src.enums.urls import Url
+from src.enums.headers import Headers
+from src.enums.data import AuthData
 from src.data_models.booking_request_data_model import BookingDataModel
 
 HEADERS = Headers.HEADERS.value

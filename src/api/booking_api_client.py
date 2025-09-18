@@ -1,6 +1,6 @@
 import allure
 
-from src.enums.enums import Url
+from src.enums.urls import Url
 
 
 class BookingApiClient:
