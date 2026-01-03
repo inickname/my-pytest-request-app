@@ -1,6 +1,6 @@
 from src.api.booking_api_client import BookingApiClient
 from src.data_models.booking_response_data_model import BookingResponseModel
-from src.utils.validate_booking_response import validate_response
+from src.utils.validate_booking_response import ValidateBookingResponse
 
 
 class BookingScenarios:
@@ -27,7 +27,8 @@ class BookingScenarios:
         assert booking_id is not None, f"ID не найден в ответе на создание: {created_booking_data}"
 
         get_booking = self.api_client.get_bookings(booking_id)
-        validate_response(get_booking, BookingResponseModel, 200, booking_data.model_dump())
+        ValidateBookingResponse.validate_response(get_booking, BookingResponseModel, 200,
+                                                  booking_data.model_dump())
 
         self.api_client.delete_booking(booking_id)
         # Проверка на успешность удаления внутри delete_booking (raise_for_status)
@@ -44,7 +45,8 @@ class BookingScenarios:
         booking_id = self.api_client.create_booking(booking_data_1).json().get("bookingid")
         updated_booking = self.api_client.update_booking(booking_id, booking_data_2)
 
-        validate_response(updated_booking, BookingResponseModel, 200, booking_data_2.model_dump())
+        ValidateBookingResponse.validate_response(updated_booking, BookingResponseModel, 200,
+                                                  booking_data_2.model_dump())
 
         print(f"Booking с ID {booking_id} успешно обновлен.")
         self.api_client.delete_booking(booking_id)
@@ -59,7 +61,8 @@ class BookingScenarios:
         booking_id = self.api_client.create_booking(booking_data_1).json().get("bookingid")
         partial_update_booking = self.api_client.partial_update_booking(booking_id, booking_data_2)
 
-        validate_response(partial_update_booking, BookingResponseModel, 200, booking_data_2.model_dump())
+        ValidateBookingResponse.validate_response(partial_update_booking, BookingResponseModel, 200,
+                                                  booking_data_2.model_dump())
 
         print(f"Booking с ID {booking_id} успешно обновлен.")
         self.api_client.delete_booking(booking_id)
